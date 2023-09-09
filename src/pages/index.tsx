@@ -22,7 +22,7 @@ export default function Home() {
 
         <div className={styles.donaters}>
           <img
-            src="https://media.licdn.com/dms/image/D4E35AQExHETfBQT8ZA/profile-framedphoto-shrink_200_200/0/1692739618899?e=1693519200&v=beta&t=mj-COWZCR0GeWeWf-FEFcmmj0GndwEIlgLg_fG55uSU"
+            src="https://avatars.githubusercontent.com/u/41460453?v=4"
             alt="Usuario apoaidor"
           />
         </div>
