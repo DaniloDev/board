@@ -8,29 +8,30 @@ import { SupportButton } from "../../components/SupportButton";
 import firebase from "../../services/firebaseConnection";
 import format from "date-fns/format";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 interface BoardProps {
   user: {
     id: string;
     nome: string;
   };
+
+  data: string;
 }
 
-interface tarefas {
+interface Tasklist {
   id: string;
-  created: any;
-  createdFormated: any;
+  created: string | Date;
+  createdFormated?: string;
   tarefa: string;
   userId: string;
   nome: string;
 }
 
-export default function Board({ user }: BoardProps) {
+export default function Board({ user, data }: BoardProps) {
   const [input, setInput] = useState("");
-  const [taskList, setTaskList] = useState<tarefas[]>([]);
+  const [taskList, setTaskList] = useState<Tasklist[]>(JSON.parse(data));
 
-  const route = useRouter();
   const pathname = usePathname();
 
   const handleAddTask = async (e: FormEvent) => {
@@ -89,11 +90,14 @@ export default function Board({ user }: BoardProps) {
           </button>
         </form>
 
-        <h1>Você tem 2 tarefas!</h1>
+        <h1>
+          Você tem {taskList.length}{" "}
+          {taskList.length === 0 || 1 ? "tarefa" : "tarefas"}!
+        </h1>
 
         <section>
           {taskList.map((task) => (
-            <article className={styles.taskList}>
+            <article className={styles.taskList} key={task.id}>
               <Link href={`${pathname}/${task.id}`}>
                 <p>{task.tarefa}</p>
               </Link>
@@ -144,6 +148,23 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
+  const tasks = await firebase
+    .firestore()
+    .collection("tarefas")
+    .where("userId", "==", session?.id)
+    .orderBy("created", "asc")
+    .get();
+
+  const data = JSON.stringify(
+    tasks.docs.map((u) => {
+      return {
+        id: u.id,
+        createdFormated: format(u.data().created.toDate(), "dd MMMM yyyy"),
+        ...u.data(),
+      };
+    })
+  );
+
   const user = {
     id: session?.id,
     nome: session?.user.name,
@@ -152,6 +173,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   return {
     props: {
       user,
+      data,
     },
   };
 };
