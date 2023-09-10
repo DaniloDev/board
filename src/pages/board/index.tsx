@@ -10,6 +10,8 @@ import format from "date-fns/format";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+const COLLECTION_NAME = "tarefas";
+
 interface BoardProps {
   user: {
     id: string;
@@ -44,7 +46,7 @@ export default function Board({ user, data }: BoardProps) {
 
     await firebase
       .firestore()
-      .collection("tarefas")
+      .collection(COLLECTION_NAME)
       .add({
         created: new Date(),
         tarefa: input,
@@ -70,6 +72,31 @@ export default function Board({ user, data }: BoardProps) {
       .catch((err) => {
         console.log("Erro ao cadastrar", err);
       });
+  };
+
+  const handleDeleteTask = async (id: string) => {
+    const resp = window.confirm("Deseja realmente excluir a tarefa ?");
+
+    if (resp) {
+      await firebase
+        .firestore()
+        .collection(COLLECTION_NAME)
+        .doc(id)
+        .delete()
+        .then(() => {
+          console.log("Deletado com sucesso!");
+          let taskDeleted = taskList.filter((item) => {
+            return item.id !== id;
+          });
+
+          setTaskList(taskDeleted);
+        })
+        .catch((err) => {
+          console.log("ERR ", err);
+        });
+    } else {
+      return;
+    }
   };
 
   return (
@@ -113,7 +140,7 @@ export default function Board({ user, data }: BoardProps) {
                   </button>
                 </div>
 
-                <button>
+                <button onClick={() => handleDeleteTask(task.id)}>
                   <FiTrash size={20} color="#ff3636" />
                   <span>Excluir</span>
                 </button>
@@ -150,7 +177,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
   const tasks = await firebase
     .firestore()
-    .collection("tarefas")
+    .collection(COLLECTION_NAME)
     .where("userId", "==", session?.id)
     .orderBy("created", "asc")
     .get();
