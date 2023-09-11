@@ -48,7 +48,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   const session = await getSession({ req });
 
-  if (!session?.id) {
+  if (!session?.vip) {
     return {
       redirect: {
         destination: "/board",

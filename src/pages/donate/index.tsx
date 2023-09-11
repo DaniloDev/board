@@ -45,7 +45,7 @@ export default function Donate({ user }: DonateProps) {
         {vip && (
           <div className={styles.vip}>
             <img src={user.image} alt="Imagem Apoiador" />
-            <span>Parabéns {user.nome} você é um(a) novo(a) apoaidor(a)</span>
+            <span>Parabéns {user.nome} você é um(a) novo(a) apoiador(a)</span>
           </div>
         )}
 
