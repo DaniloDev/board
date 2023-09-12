@@ -46,7 +46,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
   const { id } = params;
 
-  const session = await getSession({ req });
+  const session: any = await getSession({ req });
 
   if (!session?.vip) {
     return {

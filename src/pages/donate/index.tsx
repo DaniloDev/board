@@ -82,7 +82,7 @@ export default function Donate({ user }: DonateProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const session = await getSession({ req });
+  const session: any = await getSession({ req });
 
   console.log("SESSION ", session);
 
